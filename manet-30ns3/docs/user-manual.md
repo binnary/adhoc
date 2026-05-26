@@ -6,17 +6,90 @@
 
 ---
 
-## 1. 快速启动
+## 1. 获取与启动
+
+### 1.1 获取镜像
+
+```bash
+# 从 GHCR（GitHub Container Registry）拉取（推荐）
+docker pull ghcr.io/clawdbuddy/manet-controller:latest
+docker pull ghcr.io/clawdbuddy/manet-node:latest
+
+# 或从 Daocloud 拉取
+docker pull daocloud.io/clawdbuddy/manet-controller:latest
+docker pull daocloud.io/clawdbuddy/manet-node:latest
+```
+
+### 1.2 启动控制器
 
 ```bash
 cd manet-30ns3
 
-# 启动控制器（FastAPI + Web UI）
+# 启动控制器容器
 docker compose up -d controller
+
+# 验证服务状态
 curl -s localhost:8000/api/health      # 返回 {"ok": true} 即正常
 ```
 
 打开浏览器访问 **http://localhost:8000/** 即可看到 Web 管理面板。
+
+### 1.3 后台参数配置
+
+通过环境变量或 `docker-compose.yml` 配置：
+
+| 参数 | 说明 | 默认值 |
+|------|------|--------|
+| `LOG_LEVEL` | 日志级别 | INFO |
+| `MANET_WEB_DIR` | Web 静态文件目录 | /app/dist |
+| `MANET_CONFIG_DIR` | 配置文件目录 | /app/config |
+
+**方式一：环境变量**
+
+```bash
+docker compose up -d controller \
+  -e LOG_LEVEL=DEBUG \
+  -e MANET_CONFIG_DIR=/custom/config
+```
+
+**方式二：修改 docker-compose.yml**
+
+```yaml
+controller:
+  image: ghcr.io/clawdbuddy/manet-controller:latest
+  environment:
+    - LOG_LEVEL=DEBUG
+    - MANET_WEB_DIR=/app/dist
+    - MANET_CONFIG_DIR=/app/config
+  volumes:
+    - ./config:/app/config       # 持久化配置目录
+    - ./results:/results         # 持久化结果目录
+    - /var/run/docker.sock:/var/run/docker.sock
+```
+
+**方式三：通过 REST API 动态配置（仿真运行时不可改）**
+
+```bash
+# 查看当前配置
+curl -s localhost:8000/api/config | jq
+
+# 更新配置（仅在仿真未运行时有效）
+curl -X PUT localhost:8000/api/config \
+  -H 'content-type: application/json' \
+  -d '{
+    "config": {
+      "nNodes": 10,
+      "simulationTime": 300,
+      "txPowerStart": 30
+    }
+  }'
+```
+
+### 1.4 停止控制器
+
+```bash
+docker compose down
+```
 
 ---
 
