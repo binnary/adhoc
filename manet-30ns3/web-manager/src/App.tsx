@@ -9,11 +9,10 @@ import { TopologyView } from '@/sections/TopologyView';
 import { LogView } from '@/sections/LogView';
 import { DynamicControl } from '@/sections/DynamicControl';
 import { NodeManager } from '@/sections/NodeManager';
-import { RadioDeviceControl } from '@/sections/RadioDeviceControl';
 import type { NodeSpec } from '@/types/config';
 import {
   LayoutDashboard, Settings, Network, ScrollText, Zap, Server,
-  Play, Square, RotateCw, Wifi, Route, Radio,
+  Play, Square, RotateCw, Wifi, Route,
 } from 'lucide-react';
 import './App.css';
 
@@ -26,7 +25,6 @@ const NAV_ITEMS = [
   { key: 'config', label: '配置', icon: Settings },
   { key: 'dynamic', label: '动态控制', icon: Zap },
   { key: 'nodes', label: '节点管理', icon: Server },
-  { key: 'radio', label: '电台控制', icon: Radio },
   { key: 'logs', label: '日志', icon: ScrollText },
 ] as const;
 
@@ -339,12 +337,6 @@ function App() {
 
           {activePage === 'nodes' && (
             <NodeManager onNodeSpecsChange={setNodeSpecs} />
-          )}
-
-          {activePage === 'radio' && (
-            <div className="h-full overflow-auto p-4 animate-fade-in">
-              <RadioDeviceControl />
-            </div>
           )}
 
           {activePage === 'logs' && (

@@ -152,5 +152,11 @@ WEB_DIR = os.environ.get("MANET_WEB_DIR", "/app/dist")
 if os.path.isdir(WEB_DIR):
     app.mount("/", StaticFiles(directory=WEB_DIR, html=True), name="web")
     log.info("从 %s 提供 React UI", WEB_DIR)
+
+    # 独立电台控制页面
+    radio_dir = os.path.join(os.path.dirname(WEB_DIR), "radio")
+    if os.path.isdir(radio_dir):
+        app.mount("/radio", StaticFiles(directory=radio_dir, html=True), name="radio")
+        log.info("从 %s 提供电台控制页面", radio_dir)
 else:
     log.info("%s 处无 UI 目录；以纯 API 模式运行", WEB_DIR)
